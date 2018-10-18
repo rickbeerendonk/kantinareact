@@ -1,0 +1,16 @@
+
+.navbar  {
+    border: none;
+    border-radius: 0px;
+    background: cornflowerblue;
+}
+
+ .nav-text,
+ .navbar-default .navbar-brand,
+ .navbar-default .navbar-nav>li>a{
+    color: white;
+}
+
+.user{
+    color: #1e1e1e;
+}

@@ -1,0 +1,17 @@
+.align-center {
+    text-align: center;
+}
+
+.center {
+    color:red;
+}
+
+/* .glyphicon {
+    font-size: 35px;
+} */
+
+.container .jumbotron, .container-fluid .jumbotron {
+    padding: 10px;
+}
+
+
