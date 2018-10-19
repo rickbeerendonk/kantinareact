@@ -30,7 +30,7 @@ class MainPage extends Component {
 
 
     async componentDidMount () {
-      const response = await fetch('https://kantinefunctions.azurewebsites.net/api/getHistory', {
+      const response = await fetch('https://kantinefunctions.azurewebsites.net/api/getFullHistory', {
         method: 'POST',
         headers: {
             "Content-Type": "application/json",
@@ -68,31 +68,35 @@ class MainPage extends Component {
       axios.post( '/addLunch/lunch.json', data );
     } */
 
-    addLunchHandler = (startDate, endDate) => {
-      let start = startDate.format();
+    addLunchHandler (startDate) {
+     /*  let start = startDate.format();
       let newEndDate = endDate;
       newEndDate.subtract(1, 'days').format('YYYY-MM-DD');
       let data = [start, newEndDate.format()];
 
       const temp = data.map(i => {
         return i;
-      })
-      console.log(temp)
+      }) */
+      //console.log(temp);
+
+      let temp = startDate.format('YYYY-MM-DD');
+
       fetch('https://kantinefunctions.azurewebsites.net/api/addLunch', {
         method: 'POST',
         mode: 'no-cors',
         headers: {
+          "Authorization":"Bearer",
           "Content-Type": "application/json",
           "cache-control": "no-cache",
         },
         body: JSON.stringify({
           'email': 'berzi-nawzad.wasfy@capgemini.com',
-          'dates': this.temp,
+          'dates': [temp],
         })
       }).then((response) => {
-          console.log(response);
+          return(response.json())
       })
-      .catch(error => console.error(error));
+      .catch(error => console.error(error.statusText)); 
 
     }
 
@@ -126,7 +130,8 @@ class MainPage extends Component {
                     selectable = {true}
                     stick = {true}
                     events = {this.state.events}
-                    select = {this.addLunchHandler}       
+                    select = {this.addLunchHandler}  
+                         
                 /> 
 
 
