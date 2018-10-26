@@ -1,76 +1,134 @@
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import FullCalendar from 'fullcalendar-reactwrapper';
-import './calender.css';
-
-
+import React, { Component } from "react";
+import FullCalendar from "fullcalendar-reactwrapper";
+import "../../../node_modules/fullcalendar-reactwrapper/dist/css/fullcalendar.min.css";
+import Moment from "moment";
+import axios from "axios";
+import "./calender.css";
 
 class Calender extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-      events:[
-                  {
-                      title: 'All Day Event',
-                      start: '2017-05-01'
-                  },
-                  {
-                      title: 'Long Event',
-                      start: '2017-05-07',
-                      end: '2017-05-10'
-                  },
-                  {
-                      id: 999,
-                      title: 'Repeating Event',
-                      start: '2017-05-09T16:00:00'
-                  },
-                  {
-                      id: 999,
-                      title: 'Repeating Event',
-                      start: '2017-05-16T16:00:00'
-                  },
-                  {
-                      title: 'Conference',
-                      start: '2017-05-11',
-                      end: '2017-05-13'
-                  },
-                  {
-                      title: 'Meeting',
-                      start: '2017-05-12T10:30:00',
-                      end: '2017-05-12T12:30:00'
-                  },
-                  {
-                      title: 'Birthday Party',
-                      start: '2017-05-13T07:00:00'
-                  },
-                  {
-                      title: 'Click for Google',
-                      url: 'http://google.com/',
-                      start: '2017-05-28'
-                  }
-              ],		
-      }
-    }
-   
-    render() {
-      return (
-        <div id="example-component">
-            <FullCalendar
-               id = "your-custom-ID"
-                header = {{
-                    left: 'prev,next today myCustomButton',
-                    center: 'title',
-                    right: 'month,basicWeek,basicDay'
-                }}
-                defaultDate={'2017-09-12'}
-                navLinks= {true} // can click day/week names to navigate views
-                editable= {true}
-                eventLimit= {true} // allow "more" link when too many events
-                events = {this.state.events}	
-            />
-        </div>
-      );
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      events: [],
+      tempList: []
+    };
   }
 
-  export default Calender;
+  componentDidMount() {
+    fetch("https://kantinefunctions.azurewebsites.net/api/getFullHistory/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "cache-control": "no-cache"
+      },
+      body: JSON.stringify({
+        email: "berzi-nawzad.wasfy@capgemini.com"
+      })
+    })
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        let temp = JSON.parse(res);
+        let tempList = [];
+        var event = {};
+        temp.map(i => {
+          let timeFormat = Moment(i).format("YYYY-MM-DD");
+          event.title = "Lunch";
+          event.start = timeFormat;
+          tempList.push({ title: event.title, start: event.start });
+        });
+        this.setState({
+          events: tempList
+        });
+      });
+  }
+  /* 
+  removeDay = (e) => {
+    let t = Moment(e).format("YYYY-MM-DD");
+    const copyEvents = [...this.state.events];
+    const index = copyEvents.indexOf(t);
+    copyEvents.splice(index, 1);
+
+    this.setState({
+      events: copyEvents
+    })
+    console.log(this.state.events);
+  } */
+
+  addLunchHandler(startDate, endDate) {
+    let end = endDate.format("YYYY-MM-DD");
+    let start = startDate.format("YYYY-MM-DD");
+
+    let temp = [];
+    for (let i = Moment(start); i < Moment(end); i.add(1, "days")) {
+      temp.push(i.format("YYYY-MM-DD"));
+      //this.state.events.push({ title: 'Lunch', start: i.format('YYYY-MM-DD') })
+    }
+
+    fetch("https://kantinefunctions.azurewebsites.net/api/addLunch", {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        Authorization: "Bearer",
+        "Content-Type": "application/json",
+        "cache-control": "no-cache"
+      },
+      body: JSON.stringify({
+        email: "berzi-nawzad.wasfy@capgemini.com",
+        dates: temp
+      })
+    })
+  /*   .then(res => {
+
+      console.log(temp);
+      const tempEvenets = [...this.state.events];
+      //tempEvenets += res;
+      //const lunch = res;
+      console.log('-------> ', this.state.events);
+      //this.setState({ events: {title: 'lunch', start: lunch.format('YYYY-MM-DD')} });
+    }) */
+    .catch(error => console.error(error.statusText));
+  }
+
+ /*  changeCalenderStatus = (event) => {
+    this.setState({
+      events: event
+    })
+  } */
+
+ /*  shouldComponentUpdate(nextProps, nextState) {
+    if (this.state.events !== nextState.userEvents) {
+      return true;
+    }
+  }
+ */
+  render() {
+    return (
+      <div id="example-component">
+        <FullCalendar
+          id={"calender"}
+          header={{
+            left: "prev,next ",
+            center: "title",
+            right: "" // 'month,agendaWeek,agendaDay'
+          }}
+          defaultDate={new Date().toLocaleDateString("en-US")}
+          firstDay={1}
+          hiddenDays={[0, 6]}
+          navLinks={false}
+          editable={true}
+          eventLimit={true}
+          weekNumbers={true}
+          selectable={true}
+          stick={true}
+          onClick={this.changeCalenderStatus}
+          events={this.state.events}
+          select={this.addLunchHandler}
+        />
+      </div>
+    );
+  }
+}
+
+export default Calender;
