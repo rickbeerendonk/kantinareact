@@ -21,7 +21,7 @@ class Allergy extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      allergies: [],
+      allergies: {},
       temp:[],
       checked: this.props.change
     };
@@ -60,31 +60,25 @@ class Allergy extends Component {
   }; 
 
   getChange = e => {
-    const {allergies} = this.state;
-    const temp = e.target.value;
-    console.log(allergies);
-   
+    // Preserve data before the event returns to the pool 
+    const key = e.target.dataset.key;
+    const value = e.target.checked;
+
+    this.setState(state => {
+      return {
+        allergies: {...state.allergies, [key]: value}
+      }
+    });
   }
 
   render() {
     const listItems = Object.entries(this.state.allergies).map(([key, value])=>{
-      return(
-        <div>
-          {
-            (value === true) ? (
-              <p><input type="checkbox" value={value} checked change={value} onChange={this.getChange.bind(this)} />
-              <strong> {key + ' - '+ value}</strong></p>
-            ) : (
-              <p><input type="checkbox" value={value}  change={value} onChange={this.getChange.bind(this)}  />
-              <strong> {key + ' - '+ value}</strong></p>
-            )
-          }
-
-
-
-
-        {/*   <input type="checkbox" value={value}  change={value}  />
-          <strong> {key + ' - '+ value}</strong> */}
+      return (
+        <div key={key}>
+          <label>
+            <input type="checkbox" checked={value} data-key={key} onChange={this.getChange} />
+            <strong>{key + ' - '+ value}</strong>
+          </label>
         </div>
       )
     })
