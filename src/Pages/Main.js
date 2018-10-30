@@ -23,7 +23,7 @@ class MainPage extends Component {
 
   render() {
     return (
-      <Grid>
+      <Grid className="wrapper">
         <PageHeader>
           {this.state.hello} William
           {/*  Have a great Lunch! <span className="float-right">{this.state.hello} William</span> */}

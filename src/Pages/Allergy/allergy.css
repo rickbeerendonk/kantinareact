@@ -1,4 +1,45 @@
+.my-btn,
+.btn-update {
+  font-weight: bold;
+  text-transform: uppercase;
+}
 
-float-right  {
-    float: right;
+.my-btn {
+  width: 26.5rem;
+  margin: 2px 0;
+
+}
+
+.btn-update {
+  margin: 50px 0;
+  min-width: 26rem;
+  font-size: 1.3em;
+  padding: 10px;
+}
+
+.emplyeeInfo {
+  padding-top: 7px;
+}
+
+.to-right {
+  float: right;
+}
+
+
+@media screen and (max-width: 601px) {
+  .my-btn {
+    width: 37rem;
+  }
+  .btn-update {
+    margin: 20px 0;
+    width: 100%;
+  }
+
+  .emplyeeInfo {
+    padding-left: 10%;
+  }
+
+  .allergies {
+    padding-top: 20px;
+  }
 }

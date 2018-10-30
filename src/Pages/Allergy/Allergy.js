@@ -3,214 +3,204 @@ import {
   Grid,
   Col,
   Row,
-  Jumbotron,
   PageHeader,
   ToggleButtonGroup,
   ToggleButton,
   ButtonToolbar,
-  Table,
-  Glyphicon
+  Glyphicon,
+  Button,
+  Form,
+  FormControl,
+  FormGroup,
+  ControlLabel
 } from "react-bootstrap";
 import "./allergy.css";
-
-const allergies = [
-  { id: 1, name: "Lactose intolerance", value: true },
-  { id: 2, name: "Egg", value: false },
-  { id: 3, name: "Fish", value: false },
-  { id: 4, name: "Sea food", value: true },
-  { id: 5, name: "Soya", value: false },
-  { id: 6, name: "Gluten", value: false },
-  { id: 7, name: "Peanuts", value: false },
-  { id: 8, name: "Nuts", value: false },
-  { id: 9, name: "celery", value: false },
-  { id: 10, name: "Mustard", value: false },
-  { id: 11, name: "Sesame", value: false },
-  { id: 12, name: "Lupine", value: false }
-];
+import axios from "../../Server/Server";
 
 class Allergy extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      checked: [1],
       allergies: [],
-      checkboxClicked: false,
-      checkedList: [2, 3]
+      temp:[],
+      checked: this.props.change
     };
   }
 
-  /*  handleToggle = value => () => {
-    const { checked } = this.state;
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
+  postDateToServer = {
+    email: "berzi-nawzad.wasfy@capgemini.com"
+  }
 
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
+  axiosConfig = {
+    headers: {
+      "Content-Type": "application/json",
+      "cache-control": "no-cache"
     }
+  }
 
-    this.setState({
-      checked: newChecked,
-    });
-  }; */
+  async componentDidMount() {
+     axios.post('/getAllergies', this.postDateToServer, this.axiosConfig)
+     .then(res => this.setState({
+       allergies: JSON.parse(res.data)
+     }))
+  }
 
-  componentDidMount() {
-    fetch("https://kantinefunctions.azurewebsites.net/api/getAllergies", {
-      method: "POST",
+  sendCheckedAllergies = () => {
+    const tempData = this.state.allergies
+    fetch("https://kantinefunctions.azurewebsites.net/api/updateAllergies", {
       headers: {
         "Content-Type": "application/json",
         "cache-control": "no-cache"
       },
       body: JSON.stringify({
-        email: "berzi-nawzad.wasfy@capgemini.com"
+        email: "berzi-nawzad.wasfy@capgemini.com",
+        data: tempData
       })
-    })
-      .then(res => {
-        return res.json();
-      })
-      .then(res => {
-        // const temp = res.json();
+    }).catch(error => console.error(error.statusText));
+  }; 
 
-        this.setState({
-          allergies: res
-        });
-      });
-  }
-
-  createCheckbox = () => {
-    this.state.allergies.map(x => {
-      console.log(x);
-    });
-  };
-
-  getAllergies = () => {
-    const tempList = [];
-    allergies.map(x => {
-      if(x.value === true){
-        tempList.push(x.id);
-      }
-    });
-    return tempList;
-  }
-
-  test() {
-    const listLenght = this.state.allergies.length;
-    console.log(this.state.allergies);
-    //let value = Object.values(JSON.parse(this.state.allergies));
-    //let key = Object.keys(JSON.parse(this.state.allergies));
-   /*  for(let i = 0; i <= listLenght; i++){
-      console.log(key[i]+' '+value[i])
-    } */
+  getChange = e => {
+    const {allergies} = this.state;
+    const temp = e.target.value;
+    console.log(allergies);
+   
   }
 
   render() {
-    /*  const leftSideList = allergies.slice(0, allergies.length / 2);
-    const rightSideList = allergies.slice(allergies.length / 2);
- */
-   
+    const listItems = Object.entries(this.state.allergies).map(([key, value])=>{
+      return(
+        <div>
+          {
+            (value === true) ? (
+              <p><input type="checkbox" value={value} checked change={value} onChange={this.getChange.bind(this)} />
+              <strong> {key + ' - '+ value}</strong></p>
+            ) : (
+              <p><input type="checkbox" value={value}  change={value} onChange={this.getChange.bind(this)}  />
+              <strong> {key + ' - '+ value}</strong></p>
+            )
+          }
 
-    /*  for(let i in tempList){
-      return(<li>{tempList}</li>)
-    } */
+
+
+
+        {/*   <input type="checkbox" value={value}  change={value}  />
+          <strong> {key + ' - '+ value}</strong> */}
+        </div>
+      )
+    })
+
+     /* const listItems = Object.entries(this.state.allergies).map(
+      ([key, value]) => {
+        return (
+          <ButtonToolbar className="to-right">
+            {this.state.allergies[key] ? (
+              <ToggleButtonGroup type="checkbox">
+                <ToggleButton
+                  bsStyle="success"
+                  className="my-btn active"
+                  key={key}
+                  value={value}
+                  defaultValue={value}
+                  checked={this.state.checked}
+                >
+                  {key}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            ) : (
+              <ToggleButtonGroup type="checkbox" defaultValue="false">
+                <ToggleButton
+                  bsStyle="default"
+                  className="my-btn"
+                  key={key}
+                  value={value}
+                >
+                  {key}
+                </ToggleButton>
+              </ToggleButtonGroup>
+            )}
+          </ButtonToolbar>
+        );
+      }
+    );  */
 
     return (
-      <Grid>
+      <Grid className="wrapper">
+        <PageHeader>Allergies</PageHeader>
         <Row>
-          <Col xs={12} md={6}>
-            {this.test()}
+          <Col sm={12} md={6}>
+            Lorem Ipsum är en utfyllnadstext från tryck- och förlagsindustrin.
+            Lorem ipsum har varit standard ända sedan 1500-talet, när en okänd
+            boksättare tog att antal bokstäver och blandade dem för att göra ett
+            provexemplar av en bok. Lorem ipsum har inte bara överlevt fem
+            århundraden, utan även övergången till elektronisk typografi utan
+            större förändringar. Det blev allmänt känt på 1960-talet i samband
+            med lanseringen av Letraset-ark med avsnitt av Lorem Ipsum, och
+            senare med mjukvaror som Aldus PageMaker.
+          </Col>
+          <Col md={6}>
+            {listItems}
+            <Button
+              bsStyle="info"
+              className="my-btn btn-update to-right"
+              onClick={this.sendCheckedAllergies}
+            >
+              UPDATE
+            </Button>
           </Col>
         </Row>
         <Row>
-          <Col xs={12} md={6}>
-            <ButtonToolbar>
-            <ToggleButtonGroup
-                    type="checkbox"
-                    defaultValue={this.getAllergies()}
-                  >
-              {allergies.map(x => {
-                return (
-                    <ToggleButton  key={x.id} value={x.id}>
-                     {x.name}
-                    </ToggleButton>
-                );
-              })}
-              </ToggleButtonGroup>
-            </ButtonToolbar>
+          <Col xs={12} md={12}>
+            <PageHeader>Information</PageHeader>
+            <Form horizontal>
+              <FormGroup controlId="formHorizontalFullname">
+                <Col componentClass={ControlLabel} xs={2}>
+                  Fullname
+                </Col>
+                <Col xs={10}>
+                  <strong className="emplyeeInfo">William</strong>
+                </Col>
+              </FormGroup>
+
+              <FormGroup controlId="formHorizontalEmployeeId">
+                <Col componentClass={ControlLabel} xs={2}>
+                  Employee_nr
+                </Col>
+                <Col xs={10}>
+                  <strong className="emplyeeInfo">23434</strong>
+                </Col>
+              </FormGroup>
+
+              <FormGroup controlId="formHorizontalPassword1">
+                <Col componentClass={ControlLabel} sm={2}>
+                  Password
+                </Col>
+                <Col sm={10}>
+                  <FormControl type="password" placeholder="Password" />
+                </Col>
+              </FormGroup>
+              <FormGroup controlId="formHorizontalPassword2">
+                <Col componentClass={ControlLabel} sm={2}>
+                  Password
+                </Col>
+                <Col sm={10}>
+                  <FormControl
+                    type="password"
+                    placeholder="Re-Enter Password"
+                  />
+                </Col>
+              </FormGroup>
+
+              <FormGroup>
+                <Col smOffset={2} sm={10}>
+                  <Button bsStyle="info" type="submit">
+                    UPDATE PASSWORD
+                  </Button>
+                </Col>
+              </FormGroup>
+            </Form>
           </Col>
         </Row>
       </Grid>
-      /*  <Grid>
-        <PageHeader className="text-center">
-          Add or remove your Allergies.
-        </PageHeader>
-        <Row>
-          <Col xs={12} md={6}>
-            <Jumbotron>
-              <h4>
-                Type
-                <span className="float-right">Status</span>
-              </h4>
-              {leftSideList.map(index => {
-                return (
-                  <Table>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <p>{index.name}</p>
-                        </td>
-                        <td>
-                          <ToggleButtonGroup
-                            className="float-right"
-                            type="checkbox"
-                            name="options"
-                          >
-                            <ToggleButton key={index.id} value={0} onClick={ this.checkboxClickedHandler }>
-                              <Glyphicon glyph="glyphicon glyphicon-ok" />
-                            </ToggleButton>
-                          </ToggleButtonGroup>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                );
-              })}
-            </Jumbotron>
-          </Col>
-          <Col xs={12} md={6}>
-            <Jumbotron>
-              <h4>
-                Type
-                <span className="float-right">Status</span>
-              </h4>
-              {rightSideList.map(index => {
-                return (
-                  <Table>
-                    <tbody>
-                      <tr>
-                        <td>
-                          <p>{index.name}</p>
-                        </td>
-                        <td>
-                          <ToggleButtonGroup
-                            className="float-right"
-                            type="checkbox"
-                            name="options"
-                          >
-                            <ToggleButton key={index.id} value={0}>
-                              <Glyphicon glyph="glyphicon glyphicon-remove" />
-                            </ToggleButton>
-                          </ToggleButtonGroup>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                );
-              })}
-            </Jumbotron>
-          </Col>
-        </Row>
-      </Grid> */
     );
   }
 }

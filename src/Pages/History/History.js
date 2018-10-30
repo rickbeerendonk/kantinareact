@@ -61,9 +61,9 @@ class History extends Component {
   getLunchDays = () => {};
 
   render() {
-    console.log(this.state.history);
+    /* console.log(this.state.history); */
     return (
-      <Grid>
+      <Grid className="wrapper">
         <PageHeader className="align-center">History</PageHeader>
         <Row>
           {/*  this.state.history.map(x => {

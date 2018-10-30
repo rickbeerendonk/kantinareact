@@ -15,7 +15,7 @@ class App extends Component {
   render() {
     return (
       <BrowserRouter>
-        <div className="Container">
+        <div className="wrapper">
           <NavbarMain />
 
           <Footer />
